@@ -24,6 +24,7 @@ sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.22.5.linux-amd64.ta
 
 ```shell
 export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:$HOME/go/bin
 ```
 
 4. Verify that you've installed Go

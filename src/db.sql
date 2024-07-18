@@ -3,12 +3,14 @@ CREATE TABLE IF NOT EXISTS "categories" (
 	"id"	INTEGER NOT NULL,
 	"name"	TEXT NOT NULL UNIQUE,
 	"limit"	INTEGER NOT NULL,
-	PRIMARY KEY("id")
+	PRIMARY KEY("id" AUTOINCREMENT)
 );
 CREATE TABLE IF NOT EXISTS "charges" (
 	"id"	INTEGER NOT NULL,
 	"amount"	INTEGER NOT NULL,
 	"category_id"	INTEGER NOT NULL,
-	PRIMARY KEY("id")
+	"description"	TEXT,
+	FOREIGN KEY("category_id") REFERENCES "categories"("id"),
+	PRIMARY KEY("id" AUTOINCREMENT)
 );
 COMMIT;
