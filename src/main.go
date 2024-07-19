@@ -1,62 +1,30 @@
 package main
 
 import (
-	"context"
 	"database/sql"
 	"log"
-	"net/http"
-	"os"
-	"wallet-wise/src/models"
+	"wallet-wise/src/routes"
 
-	"github.com/gin-gonic/contrib/static"
-	"github.com/gin-gonic/gin"
-
+	"github.com/volatiletech/sqlboiler/boil"
 	_ "modernc.org/sqlite"
 )
 
-// JokeHandler retrieves a list of available jokes
-func JokeHandler(c *gin.Context) {
-	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Jokes handler not implemented yet",
-	})
-}
-
 func main() {
 
-	println("blah")
-
-	db, err := sql.Open("sqlite", "db.sqlite")
+	// Open db
+	db, err := sql.Open("sqlite", "./db.sqlite")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error: Cannot open sqlite3 database: ", err)
 	}
 	defer db.Close()
 
-	ctx := context.Background()
-	categories, err := models.Categories().All(ctx, db)
-	if err != nil {
-		log.Fatal(err)
-	}
-	println(categories)
+	boil.SetDB(db)
 
-	os.Exit(1)
+	//ctx := context.Background()
+	//_, err = models.Expense().All(ctx, db)
+	//if err != nil {
+	//	log.Fatal("Error: Cannot open table categories: ", err)
+	//}
 
-	// Set the router as the default one shipped with Gin
-	router := gin.Default()
-
-	// Serve frontend static files
-	router.Use(static.Serve("/", static.LocalFile("./views", true)))
-
-	// Setup route group for the API
-	api := router.Group("/api")
-	{
-		api.GET("/", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"message": "pong",
-			})
-		})
-	}
-
-	// Start and run the server
-	router.Run(":3000")
+	routes.Run()
 }

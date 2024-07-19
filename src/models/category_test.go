@@ -149,7 +149,7 @@ func testCategoriesExists(t *testing.T) {
 		t.Error(err)
 	}
 
-	e, err := CategoryExists(ctx, tx, o.ID)
+	e, err := CategoryExists(ctx, tx, o.CategoryID)
 	if err != nil {
 		t.Errorf("Unable to check if Category exists: %s", err)
 	}
@@ -175,7 +175,7 @@ func testCategoriesFind(t *testing.T) {
 		t.Error(err)
 	}
 
-	categoryFound, err := FindCategory(ctx, tx, o.ID)
+	categoryFound, err := FindCategory(ctx, tx, o.CategoryID)
 	if err != nil {
 		t.Error(err)
 	}
@@ -494,14 +494,14 @@ func testCategoriesInsertWhitelist(t *testing.T) {
 	}
 }
 
-func testCategoryToManyCharges(t *testing.T) {
+func testCategoryToManyExpenseCategoryExpenses(t *testing.T) {
 	var err error
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 
 	var a Category
-	var b, c Charge
+	var b, c Expense
 
 	seed := randomize.NewSeed()
 	if err = randomize.Struct(seed, &a, categoryDBTypes, true, categoryColumnsWithDefault...); err != nil {
@@ -512,15 +512,15 @@ func testCategoryToManyCharges(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err = randomize.Struct(seed, &b, chargeDBTypes, false, chargeColumnsWithDefault...); err != nil {
+	if err = randomize.Struct(seed, &b, expenseDBTypes, false, expenseColumnsWithDefault...); err != nil {
 		t.Fatal(err)
 	}
-	if err = randomize.Struct(seed, &c, chargeDBTypes, false, chargeColumnsWithDefault...); err != nil {
+	if err = randomize.Struct(seed, &c, expenseDBTypes, false, expenseColumnsWithDefault...); err != nil {
 		t.Fatal(err)
 	}
 
-	queries.Assign(&b.CategoryID, a.ID)
-	queries.Assign(&c.CategoryID, a.ID)
+	queries.Assign(&b.ExpenseCategoryID, a.CategoryID)
+	queries.Assign(&c.ExpenseCategoryID, a.CategoryID)
 	if err = b.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Fatal(err)
 	}
@@ -528,17 +528,17 @@ func testCategoryToManyCharges(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	check, err := a.Charges().All(ctx, tx)
+	check, err := a.ExpenseCategoryExpenses().All(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	bFound, cFound := false, false
 	for _, v := range check {
-		if queries.Equal(v.CategoryID, b.CategoryID) {
+		if queries.Equal(v.ExpenseCategoryID, b.ExpenseCategoryID) {
 			bFound = true
 		}
-		if queries.Equal(v.CategoryID, c.CategoryID) {
+		if queries.Equal(v.ExpenseCategoryID, c.ExpenseCategoryID) {
 			cFound = true
 		}
 	}
@@ -551,18 +551,18 @@ func testCategoryToManyCharges(t *testing.T) {
 	}
 
 	slice := CategorySlice{&a}
-	if err = a.L.LoadCharges(ctx, tx, false, (*[]*Category)(&slice), nil); err != nil {
+	if err = a.L.LoadExpenseCategoryExpenses(ctx, tx, false, (*[]*Category)(&slice), nil); err != nil {
 		t.Fatal(err)
 	}
-	if got := len(a.R.Charges); got != 2 {
+	if got := len(a.R.ExpenseCategoryExpenses); got != 2 {
 		t.Error("number of eager loaded records wrong, got:", got)
 	}
 
-	a.R.Charges = nil
-	if err = a.L.LoadCharges(ctx, tx, true, &a, nil); err != nil {
+	a.R.ExpenseCategoryExpenses = nil
+	if err = a.L.LoadExpenseCategoryExpenses(ctx, tx, true, &a, nil); err != nil {
 		t.Fatal(err)
 	}
-	if got := len(a.R.Charges); got != 2 {
+	if got := len(a.R.ExpenseCategoryExpenses); got != 2 {
 		t.Error("number of eager loaded records wrong, got:", got)
 	}
 
@@ -571,7 +571,7 @@ func testCategoryToManyCharges(t *testing.T) {
 	}
 }
 
-func testCategoryToManyAddOpCharges(t *testing.T) {
+func testCategoryToManyAddOpExpenseCategoryExpenses(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
@@ -579,15 +579,15 @@ func testCategoryToManyAddOpCharges(t *testing.T) {
 	defer func() { _ = tx.Rollback() }()
 
 	var a Category
-	var b, c, d, e Charge
+	var b, c, d, e Expense
 
 	seed := randomize.NewSeed()
 	if err = randomize.Struct(seed, &a, categoryDBTypes, false, strmangle.SetComplement(categoryPrimaryKeyColumns, categoryColumnsWithoutDefault)...); err != nil {
 		t.Fatal(err)
 	}
-	foreigners := []*Charge{&b, &c, &d, &e}
+	foreigners := []*Expense{&b, &c, &d, &e}
 	for _, x := range foreigners {
-		if err = randomize.Struct(seed, x, chargeDBTypes, false, strmangle.SetComplement(chargePrimaryKeyColumns, chargeColumnsWithoutDefault)...); err != nil {
+		if err = randomize.Struct(seed, x, expenseDBTypes, false, strmangle.SetComplement(expensePrimaryKeyColumns, expenseColumnsWithoutDefault)...); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -602,13 +602,13 @@ func testCategoryToManyAddOpCharges(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	foreignersSplitByInsertion := [][]*Charge{
+	foreignersSplitByInsertion := [][]*Expense{
 		{&b, &c},
 		{&d, &e},
 	}
 
 	for i, x := range foreignersSplitByInsertion {
-		err = a.AddCharges(ctx, tx, i != 0, x...)
+		err = a.AddExpenseCategoryExpenses(ctx, tx, i != 0, x...)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -616,28 +616,28 @@ func testCategoryToManyAddOpCharges(t *testing.T) {
 		first := x[0]
 		second := x[1]
 
-		if !queries.Equal(a.ID, first.CategoryID) {
-			t.Error("foreign key was wrong value", a.ID, first.CategoryID)
+		if !queries.Equal(a.CategoryID, first.ExpenseCategoryID) {
+			t.Error("foreign key was wrong value", a.CategoryID, first.ExpenseCategoryID)
 		}
-		if !queries.Equal(a.ID, second.CategoryID) {
-			t.Error("foreign key was wrong value", a.ID, second.CategoryID)
+		if !queries.Equal(a.CategoryID, second.ExpenseCategoryID) {
+			t.Error("foreign key was wrong value", a.CategoryID, second.ExpenseCategoryID)
 		}
 
-		if first.R.Category != &a {
+		if first.R.ExpenseCategory != &a {
 			t.Error("relationship was not added properly to the foreign slice")
 		}
-		if second.R.Category != &a {
+		if second.R.ExpenseCategory != &a {
 			t.Error("relationship was not added properly to the foreign slice")
 		}
 
-		if a.R.Charges[i*2] != first {
+		if a.R.ExpenseCategoryExpenses[i*2] != first {
 			t.Error("relationship struct slice not set to correct value")
 		}
-		if a.R.Charges[i*2+1] != second {
+		if a.R.ExpenseCategoryExpenses[i*2+1] != second {
 			t.Error("relationship struct slice not set to correct value")
 		}
 
-		count, err := a.Charges().Count(ctx, tx)
+		count, err := a.ExpenseCategoryExpenses().Count(ctx, tx)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -647,7 +647,7 @@ func testCategoryToManyAddOpCharges(t *testing.T) {
 	}
 }
 
-func testCategoryToManySetOpCharges(t *testing.T) {
+func testCategoryToManySetOpExpenseCategoryExpenses(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
@@ -655,15 +655,15 @@ func testCategoryToManySetOpCharges(t *testing.T) {
 	defer func() { _ = tx.Rollback() }()
 
 	var a Category
-	var b, c, d, e Charge
+	var b, c, d, e Expense
 
 	seed := randomize.NewSeed()
 	if err = randomize.Struct(seed, &a, categoryDBTypes, false, strmangle.SetComplement(categoryPrimaryKeyColumns, categoryColumnsWithoutDefault)...); err != nil {
 		t.Fatal(err)
 	}
-	foreigners := []*Charge{&b, &c, &d, &e}
+	foreigners := []*Expense{&b, &c, &d, &e}
 	for _, x := range foreigners {
-		if err = randomize.Struct(seed, x, chargeDBTypes, false, strmangle.SetComplement(chargePrimaryKeyColumns, chargeColumnsWithoutDefault)...); err != nil {
+		if err = randomize.Struct(seed, x, expenseDBTypes, false, strmangle.SetComplement(expensePrimaryKeyColumns, expenseColumnsWithoutDefault)...); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -678,25 +678,12 @@ func testCategoryToManySetOpCharges(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = a.SetCharges(ctx, tx, false, &b, &c)
+	err = a.SetExpenseCategoryExpenses(ctx, tx, false, &b, &c)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	count, err := a.Charges().Count(ctx, tx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if count != 2 {
-		t.Error("count was wrong:", count)
-	}
-
-	err = a.SetCharges(ctx, tx, true, &d, &e)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	count, err = a.Charges().Count(ctx, tx)
+	count, err := a.ExpenseCategoryExpenses().Count(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -704,41 +691,54 @@ func testCategoryToManySetOpCharges(t *testing.T) {
 		t.Error("count was wrong:", count)
 	}
 
-	if !queries.IsValuerNil(b.CategoryID) {
+	err = a.SetExpenseCategoryExpenses(ctx, tx, true, &d, &e)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	count, err = a.ExpenseCategoryExpenses().Count(ctx, tx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if count != 2 {
+		t.Error("count was wrong:", count)
+	}
+
+	if !queries.IsValuerNil(b.ExpenseCategoryID) {
 		t.Error("want b's foreign key value to be nil")
 	}
-	if !queries.IsValuerNil(c.CategoryID) {
+	if !queries.IsValuerNil(c.ExpenseCategoryID) {
 		t.Error("want c's foreign key value to be nil")
 	}
-	if !queries.Equal(a.ID, d.CategoryID) {
-		t.Error("foreign key was wrong value", a.ID, d.CategoryID)
+	if !queries.Equal(a.CategoryID, d.ExpenseCategoryID) {
+		t.Error("foreign key was wrong value", a.CategoryID, d.ExpenseCategoryID)
 	}
-	if !queries.Equal(a.ID, e.CategoryID) {
-		t.Error("foreign key was wrong value", a.ID, e.CategoryID)
-	}
-
-	if b.R.Category != nil {
-		t.Error("relationship was not removed properly from the foreign struct")
-	}
-	if c.R.Category != nil {
-		t.Error("relationship was not removed properly from the foreign struct")
-	}
-	if d.R.Category != &a {
-		t.Error("relationship was not added properly to the foreign struct")
-	}
-	if e.R.Category != &a {
-		t.Error("relationship was not added properly to the foreign struct")
+	if !queries.Equal(a.CategoryID, e.ExpenseCategoryID) {
+		t.Error("foreign key was wrong value", a.CategoryID, e.ExpenseCategoryID)
 	}
 
-	if a.R.Charges[0] != &d {
+	if b.R.ExpenseCategory != nil {
+		t.Error("relationship was not removed properly from the foreign struct")
+	}
+	if c.R.ExpenseCategory != nil {
+		t.Error("relationship was not removed properly from the foreign struct")
+	}
+	if d.R.ExpenseCategory != &a {
+		t.Error("relationship was not added properly to the foreign struct")
+	}
+	if e.R.ExpenseCategory != &a {
+		t.Error("relationship was not added properly to the foreign struct")
+	}
+
+	if a.R.ExpenseCategoryExpenses[0] != &d {
 		t.Error("relationship struct slice not set to correct value")
 	}
-	if a.R.Charges[1] != &e {
+	if a.R.ExpenseCategoryExpenses[1] != &e {
 		t.Error("relationship struct slice not set to correct value")
 	}
 }
 
-func testCategoryToManyRemoveOpCharges(t *testing.T) {
+func testCategoryToManyRemoveOpExpenseCategoryExpenses(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
@@ -746,15 +746,15 @@ func testCategoryToManyRemoveOpCharges(t *testing.T) {
 	defer func() { _ = tx.Rollback() }()
 
 	var a Category
-	var b, c, d, e Charge
+	var b, c, d, e Expense
 
 	seed := randomize.NewSeed()
 	if err = randomize.Struct(seed, &a, categoryDBTypes, false, strmangle.SetComplement(categoryPrimaryKeyColumns, categoryColumnsWithoutDefault)...); err != nil {
 		t.Fatal(err)
 	}
-	foreigners := []*Charge{&b, &c, &d, &e}
+	foreigners := []*Expense{&b, &c, &d, &e}
 	for _, x := range foreigners {
-		if err = randomize.Struct(seed, x, chargeDBTypes, false, strmangle.SetComplement(chargePrimaryKeyColumns, chargeColumnsWithoutDefault)...); err != nil {
+		if err = randomize.Struct(seed, x, expenseDBTypes, false, strmangle.SetComplement(expensePrimaryKeyColumns, expenseColumnsWithoutDefault)...); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -763,12 +763,12 @@ func testCategoryToManyRemoveOpCharges(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = a.AddCharges(ctx, tx, true, foreigners...)
+	err = a.AddExpenseCategoryExpenses(ctx, tx, true, foreigners...)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	count, err := a.Charges().Count(ctx, tx)
+	count, err := a.ExpenseCategoryExpenses().Count(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -776,12 +776,12 @@ func testCategoryToManyRemoveOpCharges(t *testing.T) {
 		t.Error("count was wrong:", count)
 	}
 
-	err = a.RemoveCharges(ctx, tx, foreigners[:2]...)
+	err = a.RemoveExpenseCategoryExpenses(ctx, tx, foreigners[:2]...)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	count, err = a.Charges().Count(ctx, tx)
+	count, err = a.ExpenseCategoryExpenses().Count(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -789,35 +789,35 @@ func testCategoryToManyRemoveOpCharges(t *testing.T) {
 		t.Error("count was wrong:", count)
 	}
 
-	if !queries.IsValuerNil(b.CategoryID) {
+	if !queries.IsValuerNil(b.ExpenseCategoryID) {
 		t.Error("want b's foreign key value to be nil")
 	}
-	if !queries.IsValuerNil(c.CategoryID) {
+	if !queries.IsValuerNil(c.ExpenseCategoryID) {
 		t.Error("want c's foreign key value to be nil")
 	}
 
-	if b.R.Category != nil {
+	if b.R.ExpenseCategory != nil {
 		t.Error("relationship was not removed properly from the foreign struct")
 	}
-	if c.R.Category != nil {
+	if c.R.ExpenseCategory != nil {
 		t.Error("relationship was not removed properly from the foreign struct")
 	}
-	if d.R.Category != &a {
+	if d.R.ExpenseCategory != &a {
 		t.Error("relationship to a should have been preserved")
 	}
-	if e.R.Category != &a {
+	if e.R.ExpenseCategory != &a {
 		t.Error("relationship to a should have been preserved")
 	}
 
-	if len(a.R.Charges) != 2 {
+	if len(a.R.ExpenseCategoryExpenses) != 2 {
 		t.Error("should have preserved two relationships")
 	}
 
 	// Removal doesn't do a stable deletion for performance so we have to flip the order
-	if a.R.Charges[1] != &d {
+	if a.R.ExpenseCategoryExpenses[1] != &d {
 		t.Error("relationship to d should have been preserved")
 	}
-	if a.R.Charges[0] != &e {
+	if a.R.ExpenseCategoryExpenses[0] != &e {
 		t.Error("relationship to e should have been preserved")
 	}
 }
@@ -896,7 +896,7 @@ func testCategoriesSelect(t *testing.T) {
 }
 
 var (
-	categoryDBTypes = map[string]string{`ID`: `INTEGER`, `Name`: `TEXT`, `Limit`: `INTEGER`}
+	categoryDBTypes = map[string]string{`CategoryID`: `INTEGER`, `CategoryName`: `TEXT`, `CategoryLimit`: `INTEGER`}
 	_               = bytes.MinRead
 )
 

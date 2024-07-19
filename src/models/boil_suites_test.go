@@ -13,87 +13,87 @@ import "testing"
 // Separating the tests thusly grants avoidance of Postgres deadlocks.
 func TestParent(t *testing.T) {
 	t.Run("Categories", testCategories)
-	t.Run("Charges", testCharges)
+	t.Run("Expenses", testExpenses)
 }
 
 func TestDelete(t *testing.T) {
 	t.Run("Categories", testCategoriesDelete)
-	t.Run("Charges", testChargesDelete)
+	t.Run("Expenses", testExpensesDelete)
 }
 
 func TestQueryDeleteAll(t *testing.T) {
 	t.Run("Categories", testCategoriesQueryDeleteAll)
-	t.Run("Charges", testChargesQueryDeleteAll)
+	t.Run("Expenses", testExpensesQueryDeleteAll)
 }
 
 func TestSliceDeleteAll(t *testing.T) {
 	t.Run("Categories", testCategoriesSliceDeleteAll)
-	t.Run("Charges", testChargesSliceDeleteAll)
+	t.Run("Expenses", testExpensesSliceDeleteAll)
 }
 
 func TestExists(t *testing.T) {
 	t.Run("Categories", testCategoriesExists)
-	t.Run("Charges", testChargesExists)
+	t.Run("Expenses", testExpensesExists)
 }
 
 func TestFind(t *testing.T) {
 	t.Run("Categories", testCategoriesFind)
-	t.Run("Charges", testChargesFind)
+	t.Run("Expenses", testExpensesFind)
 }
 
 func TestBind(t *testing.T) {
 	t.Run("Categories", testCategoriesBind)
-	t.Run("Charges", testChargesBind)
+	t.Run("Expenses", testExpensesBind)
 }
 
 func TestOne(t *testing.T) {
 	t.Run("Categories", testCategoriesOne)
-	t.Run("Charges", testChargesOne)
+	t.Run("Expenses", testExpensesOne)
 }
 
 func TestAll(t *testing.T) {
 	t.Run("Categories", testCategoriesAll)
-	t.Run("Charges", testChargesAll)
+	t.Run("Expenses", testExpensesAll)
 }
 
 func TestCount(t *testing.T) {
 	t.Run("Categories", testCategoriesCount)
-	t.Run("Charges", testChargesCount)
+	t.Run("Expenses", testExpensesCount)
 }
 
 func TestHooks(t *testing.T) {
 	t.Run("Categories", testCategoriesHooks)
-	t.Run("Charges", testChargesHooks)
+	t.Run("Expenses", testExpensesHooks)
 }
 
 func TestInsert(t *testing.T) {
 	t.Run("Categories", testCategoriesInsert)
 	t.Run("Categories", testCategoriesInsertWhitelist)
-	t.Run("Charges", testChargesInsert)
-	t.Run("Charges", testChargesInsertWhitelist)
+	t.Run("Expenses", testExpensesInsert)
+	t.Run("Expenses", testExpensesInsertWhitelist)
 }
 
 func TestReload(t *testing.T) {
 	t.Run("Categories", testCategoriesReload)
-	t.Run("Charges", testChargesReload)
+	t.Run("Expenses", testExpensesReload)
 }
 
 func TestReloadAll(t *testing.T) {
 	t.Run("Categories", testCategoriesReloadAll)
-	t.Run("Charges", testChargesReloadAll)
+	t.Run("Expenses", testExpensesReloadAll)
 }
 
 func TestSelect(t *testing.T) {
 	t.Run("Categories", testCategoriesSelect)
-	t.Run("Charges", testChargesSelect)
+	t.Run("Expenses", testExpensesSelect)
 }
 
 func TestUpdate(t *testing.T) {
 	t.Run("Categories", testCategoriesUpdate)
-	t.Run("Charges", testChargesUpdate)
+	t.Run("Expenses", testExpensesUpdate)
 }
 
 func TestSliceUpdateAll(t *testing.T) {
 	t.Run("Categories", testCategoriesSliceUpdateAll)
-	t.Run("Charges", testChargesSliceUpdateAll)
+	t.Run("Expenses", testExpensesSliceUpdateAll)
 }

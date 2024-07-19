@@ -1,0 +1,1 @@
+curl http://localhost:3000/api/expense/ --include --header "Content-Type: application/json" --request "POST" --data '{"id": 3,"amount": 20,"category_id": 1,"description": "blah","date": "today"}'

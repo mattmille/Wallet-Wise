@@ -23,32 +23,32 @@ import (
 
 // Category is an object representing the database table.
 type Category struct {
-	ID    int64  `boil:"id" json:"id" toml:"id" yaml:"id"`
-	Name  string `boil:"name" json:"name" toml:"name" yaml:"name"`
-	Limit int64  `boil:"limit" json:"limit" toml:"limit" yaml:"limit"`
+	CategoryID    int64  `boil:"category_id" json:"category_id" toml:"category_id" yaml:"category_id"`
+	CategoryName  string `boil:"category_name" json:"category_name" toml:"category_name" yaml:"category_name"`
+	CategoryLimit int64  `boil:"category_limit" json:"category_limit" toml:"category_limit" yaml:"category_limit"`
 
 	R *categoryR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L categoryL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var CategoryColumns = struct {
-	ID    string
-	Name  string
-	Limit string
+	CategoryID    string
+	CategoryName  string
+	CategoryLimit string
 }{
-	ID:    "id",
-	Name:  "name",
-	Limit: "limit",
+	CategoryID:    "category_id",
+	CategoryName:  "category_name",
+	CategoryLimit: "category_limit",
 }
 
 var CategoryTableColumns = struct {
-	ID    string
-	Name  string
-	Limit string
+	CategoryID    string
+	CategoryName  string
+	CategoryLimit string
 }{
-	ID:    "categories.id",
-	Name:  "categories.name",
-	Limit: "categories.limit",
+	CategoryID:    "category.category_id",
+	CategoryName:  "category.category_name",
+	CategoryLimit: "category.category_limit",
 }
 
 // Generated where
@@ -102,25 +102,25 @@ func (w whereHelperstring) NIN(slice []string) qm.QueryMod {
 }
 
 var CategoryWhere = struct {
-	ID    whereHelperint64
-	Name  whereHelperstring
-	Limit whereHelperint64
+	CategoryID    whereHelperint64
+	CategoryName  whereHelperstring
+	CategoryLimit whereHelperint64
 }{
-	ID:    whereHelperint64{field: "\"categories\".\"id\""},
-	Name:  whereHelperstring{field: "\"categories\".\"name\""},
-	Limit: whereHelperint64{field: "\"categories\".\"limit\""},
+	CategoryID:    whereHelperint64{field: "\"category\".\"category_id\""},
+	CategoryName:  whereHelperstring{field: "\"category\".\"category_name\""},
+	CategoryLimit: whereHelperint64{field: "\"category\".\"category_limit\""},
 }
 
 // CategoryRels is where relationship names are stored.
 var CategoryRels = struct {
-	Charges string
+	ExpenseCategoryExpenses string
 }{
-	Charges: "Charges",
+	ExpenseCategoryExpenses: "ExpenseCategoryExpenses",
 }
 
 // categoryR is where relationships are stored.
 type categoryR struct {
-	Charges ChargeSlice `boil:"Charges" json:"Charges" toml:"Charges" yaml:"Charges"`
+	ExpenseCategoryExpenses ExpenseSlice `boil:"ExpenseCategoryExpenses" json:"ExpenseCategoryExpenses" toml:"ExpenseCategoryExpenses" yaml:"ExpenseCategoryExpenses"`
 }
 
 // NewStruct creates a new relationship struct
@@ -128,22 +128,22 @@ func (*categoryR) NewStruct() *categoryR {
 	return &categoryR{}
 }
 
-func (r *categoryR) GetCharges() ChargeSlice {
+func (r *categoryR) GetExpenseCategoryExpenses() ExpenseSlice {
 	if r == nil {
 		return nil
 	}
-	return r.Charges
+	return r.ExpenseCategoryExpenses
 }
 
 // categoryL is where Load methods for each relationship are stored.
 type categoryL struct{}
 
 var (
-	categoryAllColumns            = []string{"id", "name", "limit"}
-	categoryColumnsWithoutDefault = []string{"name", "limit"}
-	categoryColumnsWithDefault    = []string{"id"}
-	categoryPrimaryKeyColumns     = []string{"id"}
-	categoryGeneratedColumns      = []string{"id"}
+	categoryAllColumns            = []string{"category_id", "category_name", "category_limit"}
+	categoryColumnsWithoutDefault = []string{"category_name", "category_limit"}
+	categoryColumnsWithDefault    = []string{"category_id"}
+	categoryPrimaryKeyColumns     = []string{"category_id"}
+	categoryGeneratedColumns      = []string{"category_id"}
 )
 
 type (
@@ -395,7 +395,7 @@ func (q categoryQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Cat
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, sql.ErrNoRows
 		}
-		return nil, errors.Wrap(err, "models: failed to execute a one query for categories")
+		return nil, errors.Wrap(err, "models: failed to execute a one query for category")
 	}
 
 	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
@@ -444,7 +444,7 @@ func (q categoryQuery) Count(ctx context.Context, exec boil.ContextExecutor) (in
 
 	err := q.Query.QueryRowContext(ctx, exec).Scan(&count)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to count categories rows")
+		return 0, errors.Wrap(err, "models: failed to count category rows")
 	}
 
 	return count, nil
@@ -465,29 +465,29 @@ func (q categoryQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (b
 
 	err := q.Query.QueryRowContext(ctx, exec).Scan(&count)
 	if err != nil {
-		return false, errors.Wrap(err, "models: failed to check if categories exists")
+		return false, errors.Wrap(err, "models: failed to check if category exists")
 	}
 
 	return count > 0, nil
 }
 
-// Charges retrieves all the charge's Charges with an executor.
-func (o *Category) Charges(mods ...qm.QueryMod) chargeQuery {
+// ExpenseCategoryExpenses retrieves all the expense's Expenses with an executor via expense_category_id column.
+func (o *Category) ExpenseCategoryExpenses(mods ...qm.QueryMod) expenseQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
 	}
 
 	queryMods = append(queryMods,
-		qm.Where("\"charges\".\"category_id\"=?", o.ID),
+		qm.Where("\"expense\".\"expense_category_id\"=?", o.CategoryID),
 	)
 
-	return Charges(queryMods...)
+	return Expenses(queryMods...)
 }
 
-// LoadCharges allows an eager lookup of values, cached into the
+// LoadExpenseCategoryExpenses allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-M or N-M relationship.
-func (categoryL) LoadCharges(ctx context.Context, e boil.ContextExecutor, singular bool, maybeCategory interface{}, mods queries.Applicator) error {
+func (categoryL) LoadExpenseCategoryExpenses(ctx context.Context, e boil.ContextExecutor, singular bool, maybeCategory interface{}, mods queries.Applicator) error {
 	var slice []*Category
 	var object *Category
 
@@ -518,13 +518,13 @@ func (categoryL) LoadCharges(ctx context.Context, e boil.ContextExecutor, singul
 		if object.R == nil {
 			object.R = &categoryR{}
 		}
-		args[object.ID] = struct{}{}
+		args[object.CategoryID] = struct{}{}
 	} else {
 		for _, obj := range slice {
 			if obj.R == nil {
 				obj.R = &categoryR{}
 			}
-			args[obj.ID] = struct{}{}
+			args[obj.CategoryID] = struct{}{}
 		}
 	}
 
@@ -540,8 +540,8 @@ func (categoryL) LoadCharges(ctx context.Context, e boil.ContextExecutor, singul
 	}
 
 	query := NewQuery(
-		qm.From(`charges`),
-		qm.WhereIn(`charges.category_id in ?`, argsSlice...),
+		qm.From(`expense`),
+		qm.WhereIn(`expense.expense_category_id in ?`, argsSlice...),
 	)
 	if mods != nil {
 		mods.Apply(query)
@@ -549,22 +549,22 @@ func (categoryL) LoadCharges(ctx context.Context, e boil.ContextExecutor, singul
 
 	results, err := query.QueryContext(ctx, e)
 	if err != nil {
-		return errors.Wrap(err, "failed to eager load charges")
+		return errors.Wrap(err, "failed to eager load expense")
 	}
 
-	var resultSlice []*Charge
+	var resultSlice []*Expense
 	if err = queries.Bind(results, &resultSlice); err != nil {
-		return errors.Wrap(err, "failed to bind eager loaded slice charges")
+		return errors.Wrap(err, "failed to bind eager loaded slice expense")
 	}
 
 	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results in eager load on charges")
+		return errors.Wrap(err, "failed to close results in eager load on expense")
 	}
 	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for charges")
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for expense")
 	}
 
-	if len(chargeAfterSelectHooks) != 0 {
+	if len(expenseAfterSelectHooks) != 0 {
 		for _, obj := range resultSlice {
 			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
 				return err
@@ -572,24 +572,24 @@ func (categoryL) LoadCharges(ctx context.Context, e boil.ContextExecutor, singul
 		}
 	}
 	if singular {
-		object.R.Charges = resultSlice
+		object.R.ExpenseCategoryExpenses = resultSlice
 		for _, foreign := range resultSlice {
 			if foreign.R == nil {
-				foreign.R = &chargeR{}
+				foreign.R = &expenseR{}
 			}
-			foreign.R.Category = object
+			foreign.R.ExpenseCategory = object
 		}
 		return nil
 	}
 
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
-			if queries.Equal(local.ID, foreign.CategoryID) {
-				local.R.Charges = append(local.R.Charges, foreign)
+			if queries.Equal(local.CategoryID, foreign.ExpenseCategoryID) {
+				local.R.ExpenseCategoryExpenses = append(local.R.ExpenseCategoryExpenses, foreign)
 				if foreign.R == nil {
-					foreign.R = &chargeR{}
+					foreign.R = &expenseR{}
 				}
-				foreign.R.Category = local
+				foreign.R.ExpenseCategory = local
 				break
 			}
 		}
@@ -598,34 +598,34 @@ func (categoryL) LoadCharges(ctx context.Context, e boil.ContextExecutor, singul
 	return nil
 }
 
-// AddChargesG adds the given related objects to the existing relationships
+// AddExpenseCategoryExpensesG adds the given related objects to the existing relationships
 // of the category, optionally inserting them as new records.
-// Appends related to o.R.Charges.
-// Sets related.R.Category appropriately.
+// Appends related to o.R.ExpenseCategoryExpenses.
+// Sets related.R.ExpenseCategory appropriately.
 // Uses the global database handle.
-func (o *Category) AddChargesG(ctx context.Context, insert bool, related ...*Charge) error {
-	return o.AddCharges(ctx, boil.GetContextDB(), insert, related...)
+func (o *Category) AddExpenseCategoryExpensesG(ctx context.Context, insert bool, related ...*Expense) error {
+	return o.AddExpenseCategoryExpenses(ctx, boil.GetContextDB(), insert, related...)
 }
 
-// AddCharges adds the given related objects to the existing relationships
+// AddExpenseCategoryExpenses adds the given related objects to the existing relationships
 // of the category, optionally inserting them as new records.
-// Appends related to o.R.Charges.
-// Sets related.R.Category appropriately.
-func (o *Category) AddCharges(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Charge) error {
+// Appends related to o.R.ExpenseCategoryExpenses.
+// Sets related.R.ExpenseCategory appropriately.
+func (o *Category) AddExpenseCategoryExpenses(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Expense) error {
 	var err error
 	for _, rel := range related {
 		if insert {
-			queries.Assign(&rel.CategoryID, o.ID)
+			queries.Assign(&rel.ExpenseCategoryID, o.CategoryID)
 			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
 			updateQuery := fmt.Sprintf(
-				"UPDATE \"charges\" SET %s WHERE %s",
-				strmangle.SetParamNames("\"", "\"", 0, []string{"category_id"}),
-				strmangle.WhereClause("\"", "\"", 0, chargePrimaryKeyColumns),
+				"UPDATE \"expense\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 0, []string{"expense_category_id"}),
+				strmangle.WhereClause("\"", "\"", 0, expensePrimaryKeyColumns),
 			)
-			values := []interface{}{o.ID, rel.ID}
+			values := []interface{}{o.CategoryID, rel.ExpenseID}
 
 			if boil.IsDebug(ctx) {
 				writer := boil.DebugWriterFrom(ctx)
@@ -636,50 +636,50 @@ func (o *Category) AddCharges(ctx context.Context, exec boil.ContextExecutor, in
 				return errors.Wrap(err, "failed to update foreign table")
 			}
 
-			queries.Assign(&rel.CategoryID, o.ID)
+			queries.Assign(&rel.ExpenseCategoryID, o.CategoryID)
 		}
 	}
 
 	if o.R == nil {
 		o.R = &categoryR{
-			Charges: related,
+			ExpenseCategoryExpenses: related,
 		}
 	} else {
-		o.R.Charges = append(o.R.Charges, related...)
+		o.R.ExpenseCategoryExpenses = append(o.R.ExpenseCategoryExpenses, related...)
 	}
 
 	for _, rel := range related {
 		if rel.R == nil {
-			rel.R = &chargeR{
-				Category: o,
+			rel.R = &expenseR{
+				ExpenseCategory: o,
 			}
 		} else {
-			rel.R.Category = o
+			rel.R.ExpenseCategory = o
 		}
 	}
 	return nil
 }
 
-// SetChargesG removes all previously related items of the
+// SetExpenseCategoryExpensesG removes all previously related items of the
 // category replacing them completely with the passed
 // in related items, optionally inserting them as new records.
-// Sets o.R.Category's Charges accordingly.
-// Replaces o.R.Charges with related.
-// Sets related.R.Category's Charges accordingly.
+// Sets o.R.ExpenseCategory's ExpenseCategoryExpenses accordingly.
+// Replaces o.R.ExpenseCategoryExpenses with related.
+// Sets related.R.ExpenseCategory's ExpenseCategoryExpenses accordingly.
 // Uses the global database handle.
-func (o *Category) SetChargesG(ctx context.Context, insert bool, related ...*Charge) error {
-	return o.SetCharges(ctx, boil.GetContextDB(), insert, related...)
+func (o *Category) SetExpenseCategoryExpensesG(ctx context.Context, insert bool, related ...*Expense) error {
+	return o.SetExpenseCategoryExpenses(ctx, boil.GetContextDB(), insert, related...)
 }
 
-// SetCharges removes all previously related items of the
+// SetExpenseCategoryExpenses removes all previously related items of the
 // category replacing them completely with the passed
 // in related items, optionally inserting them as new records.
-// Sets o.R.Category's Charges accordingly.
-// Replaces o.R.Charges with related.
-// Sets related.R.Category's Charges accordingly.
-func (o *Category) SetCharges(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Charge) error {
-	query := "update \"charges\" set \"category_id\" = null where \"category_id\" = ?"
-	values := []interface{}{o.ID}
+// Sets o.R.ExpenseCategory's ExpenseCategoryExpenses accordingly.
+// Replaces o.R.ExpenseCategoryExpenses with related.
+// Sets related.R.ExpenseCategory's ExpenseCategoryExpenses accordingly.
+func (o *Category) SetExpenseCategoryExpenses(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Expense) error {
+	query := "update \"expense\" set \"expense_category_id\" = null where \"expense_category_id\" = ?"
+	values := []interface{}{o.CategoryID}
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
 		fmt.Fprintln(writer, query)
@@ -691,43 +691,43 @@ func (o *Category) SetCharges(ctx context.Context, exec boil.ContextExecutor, in
 	}
 
 	if o.R != nil {
-		for _, rel := range o.R.Charges {
-			queries.SetScanner(&rel.CategoryID, nil)
+		for _, rel := range o.R.ExpenseCategoryExpenses {
+			queries.SetScanner(&rel.ExpenseCategoryID, nil)
 			if rel.R == nil {
 				continue
 			}
 
-			rel.R.Category = nil
+			rel.R.ExpenseCategory = nil
 		}
-		o.R.Charges = nil
+		o.R.ExpenseCategoryExpenses = nil
 	}
 
-	return o.AddCharges(ctx, exec, insert, related...)
+	return o.AddExpenseCategoryExpenses(ctx, exec, insert, related...)
 }
 
-// RemoveChargesG relationships from objects passed in.
-// Removes related items from R.Charges (uses pointer comparison, removal does not keep order)
-// Sets related.R.Category.
+// RemoveExpenseCategoryExpensesG relationships from objects passed in.
+// Removes related items from R.ExpenseCategoryExpenses (uses pointer comparison, removal does not keep order)
+// Sets related.R.ExpenseCategory.
 // Uses the global database handle.
-func (o *Category) RemoveChargesG(ctx context.Context, related ...*Charge) error {
-	return o.RemoveCharges(ctx, boil.GetContextDB(), related...)
+func (o *Category) RemoveExpenseCategoryExpensesG(ctx context.Context, related ...*Expense) error {
+	return o.RemoveExpenseCategoryExpenses(ctx, boil.GetContextDB(), related...)
 }
 
-// RemoveCharges relationships from objects passed in.
-// Removes related items from R.Charges (uses pointer comparison, removal does not keep order)
-// Sets related.R.Category.
-func (o *Category) RemoveCharges(ctx context.Context, exec boil.ContextExecutor, related ...*Charge) error {
+// RemoveExpenseCategoryExpenses relationships from objects passed in.
+// Removes related items from R.ExpenseCategoryExpenses (uses pointer comparison, removal does not keep order)
+// Sets related.R.ExpenseCategory.
+func (o *Category) RemoveExpenseCategoryExpenses(ctx context.Context, exec boil.ContextExecutor, related ...*Expense) error {
 	if len(related) == 0 {
 		return nil
 	}
 
 	var err error
 	for _, rel := range related {
-		queries.SetScanner(&rel.CategoryID, nil)
+		queries.SetScanner(&rel.ExpenseCategoryID, nil)
 		if rel.R != nil {
-			rel.R.Category = nil
+			rel.R.ExpenseCategory = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("category_id")); err != nil {
+		if _, err = rel.Update(ctx, exec, boil.Whitelist("expense_category_id")); err != nil {
 			return err
 		}
 	}
@@ -736,16 +736,16 @@ func (o *Category) RemoveCharges(ctx context.Context, exec boil.ContextExecutor,
 	}
 
 	for _, rel := range related {
-		for i, ri := range o.R.Charges {
+		for i, ri := range o.R.ExpenseCategoryExpenses {
 			if rel != ri {
 				continue
 			}
 
-			ln := len(o.R.Charges)
+			ln := len(o.R.ExpenseCategoryExpenses)
 			if ln > 1 && i < ln-1 {
-				o.R.Charges[i] = o.R.Charges[ln-1]
+				o.R.ExpenseCategoryExpenses[i] = o.R.ExpenseCategoryExpenses[ln-1]
 			}
-			o.R.Charges = o.R.Charges[:ln-1]
+			o.R.ExpenseCategoryExpenses = o.R.ExpenseCategoryExpenses[:ln-1]
 			break
 		}
 	}
@@ -755,23 +755,23 @@ func (o *Category) RemoveCharges(ctx context.Context, exec boil.ContextExecutor,
 
 // Categories retrieves all the records using an executor.
 func Categories(mods ...qm.QueryMod) categoryQuery {
-	mods = append(mods, qm.From("\"categories\""))
+	mods = append(mods, qm.From("\"category\""))
 	q := NewQuery(mods...)
 	if len(queries.GetSelect(q)) == 0 {
-		queries.SetSelect(q, []string{"\"categories\".*"})
+		queries.SetSelect(q, []string{"\"category\".*"})
 	}
 
 	return categoryQuery{q}
 }
 
 // FindCategoryG retrieves a single record by ID.
-func FindCategoryG(ctx context.Context, iD int64, selectCols ...string) (*Category, error) {
-	return FindCategory(ctx, boil.GetContextDB(), iD, selectCols...)
+func FindCategoryG(ctx context.Context, categoryID int64, selectCols ...string) (*Category, error) {
+	return FindCategory(ctx, boil.GetContextDB(), categoryID, selectCols...)
 }
 
 // FindCategory retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindCategory(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*Category, error) {
+func FindCategory(ctx context.Context, exec boil.ContextExecutor, categoryID int64, selectCols ...string) (*Category, error) {
 	categoryObj := &Category{}
 
 	sel := "*"
@@ -779,17 +779,17 @@ func FindCategory(ctx context.Context, exec boil.ContextExecutor, iD int64, sele
 		sel = strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, selectCols), ",")
 	}
 	query := fmt.Sprintf(
-		"select %s from \"categories\" where \"id\"=?", sel,
+		"select %s from \"category\" where \"category_id\"=?", sel,
 	)
 
-	q := queries.Raw(query, iD)
+	q := queries.Raw(query, categoryID)
 
 	err := q.Bind(ctx, exec, categoryObj)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, sql.ErrNoRows
 		}
-		return nil, errors.Wrap(err, "models: unable to select from categories")
+		return nil, errors.Wrap(err, "models: unable to select from category")
 	}
 
 	if err = categoryObj.doAfterSelectHooks(ctx, exec); err != nil {
@@ -808,7 +808,7 @@ func (o *Category) InsertG(ctx context.Context, columns boil.Columns) error {
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
 func (o *Category) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
-		return errors.New("models: no categories provided for insertion")
+		return errors.New("models: no category provided for insertion")
 	}
 
 	var err error
@@ -842,9 +842,9 @@ func (o *Category) Insert(ctx context.Context, exec boil.ContextExecutor, column
 			return err
 		}
 		if len(wl) != 0 {
-			cache.query = fmt.Sprintf("INSERT INTO \"categories\" (\"%s\") %%sVALUES (%s)%%s", strings.Join(wl, "\",\""), strmangle.Placeholders(dialect.UseIndexPlaceholders, len(wl), 1, 1))
+			cache.query = fmt.Sprintf("INSERT INTO \"category\" (\"%s\") %%sVALUES (%s)%%s", strings.Join(wl, "\",\""), strmangle.Placeholders(dialect.UseIndexPlaceholders, len(wl), 1, 1))
 		} else {
-			cache.query = "INSERT INTO \"categories\" %sDEFAULT VALUES%s"
+			cache.query = "INSERT INTO \"category\" %sDEFAULT VALUES%s"
 		}
 
 		var queryOutput, queryReturning string
@@ -872,7 +872,7 @@ func (o *Category) Insert(ctx context.Context, exec boil.ContextExecutor, column
 	}
 
 	if err != nil {
-		return errors.Wrap(err, "models: unable to insert into categories")
+		return errors.Wrap(err, "models: unable to insert into category")
 	}
 
 	if !cached {
@@ -914,10 +914,10 @@ func (o *Category) Update(ctx context.Context, exec boil.ContextExecutor, column
 			wl = strmangle.SetComplement(wl, []string{"created_at"})
 		}
 		if len(wl) == 0 {
-			return 0, errors.New("models: unable to update categories, could not build whitelist")
+			return 0, errors.New("models: unable to update category, could not build whitelist")
 		}
 
-		cache.query = fmt.Sprintf("UPDATE \"categories\" SET %s WHERE %s",
+		cache.query = fmt.Sprintf("UPDATE \"category\" SET %s WHERE %s",
 			strmangle.SetParamNames("\"", "\"", 0, wl),
 			strmangle.WhereClause("\"", "\"", 0, categoryPrimaryKeyColumns),
 		)
@@ -937,12 +937,12 @@ func (o *Category) Update(ctx context.Context, exec boil.ContextExecutor, column
 	var result sql.Result
 	result, err = exec.ExecContext(ctx, cache.query, values...)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to update categories row")
+		return 0, errors.Wrap(err, "models: unable to update category row")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by update for categories")
+		return 0, errors.Wrap(err, "models: failed to get rows affected by update for category")
 	}
 
 	if !cached {
@@ -965,12 +965,12 @@ func (q categoryQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor,
 
 	result, err := q.Query.ExecContext(ctx, exec)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to update all for categories")
+		return 0, errors.Wrap(err, "models: unable to update all for category")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to retrieve rows affected for categories")
+		return 0, errors.Wrap(err, "models: unable to retrieve rows affected for category")
 	}
 
 	return rowsAff, nil
@@ -1008,7 +1008,7 @@ func (o CategorySlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor,
 		args = append(args, pkeyArgs...)
 	}
 
-	sql := fmt.Sprintf("UPDATE \"categories\" SET %s WHERE %s",
+	sql := fmt.Sprintf("UPDATE \"category\" SET %s WHERE %s",
 		strmangle.SetParamNames("\"", "\"", 0, colNames),
 		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, categoryPrimaryKeyColumns, len(o)))
 
@@ -1038,7 +1038,7 @@ func (o *Category) UpsertG(ctx context.Context, updateOnConflict bool, conflictC
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *Category) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
-		return errors.New("models: no categories provided for upsert")
+		return errors.New("models: no category provided for upsert")
 	}
 
 	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
@@ -1094,7 +1094,7 @@ func (o *Category) Upsert(ctx context.Context, exec boil.ContextExecutor, update
 		)
 
 		if updateOnConflict && len(update) == 0 {
-			return errors.New("models: unable to upsert categories, could not build update column list")
+			return errors.New("models: unable to upsert category, could not build update column list")
 		}
 
 		ret := strmangle.SetComplement(categoryAllColumns, strmangle.SetIntersect(insert, update))
@@ -1104,7 +1104,7 @@ func (o *Category) Upsert(ctx context.Context, exec boil.ContextExecutor, update
 			conflict = make([]string, len(categoryPrimaryKeyColumns))
 			copy(conflict, categoryPrimaryKeyColumns)
 		}
-		cache.query = buildUpsertQuerySQLite(dialect, "\"categories\"", updateOnConflict, ret, update, conflict, insert)
+		cache.query = buildUpsertQuerySQLite(dialect, "\"category\"", updateOnConflict, ret, update, conflict, insert)
 
 		cache.valueMapping, err = queries.BindMapping(categoryType, categoryMapping, insert)
 		if err != nil {
@@ -1139,7 +1139,7 @@ func (o *Category) Upsert(ctx context.Context, exec boil.ContextExecutor, update
 		_, err = exec.ExecContext(ctx, cache.query, vals...)
 	}
 	if err != nil {
-		return errors.Wrap(err, "models: unable to upsert categories")
+		return errors.Wrap(err, "models: unable to upsert category")
 	}
 
 	if !cached {
@@ -1169,7 +1169,7 @@ func (o *Category) Delete(ctx context.Context, exec boil.ContextExecutor) (int64
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), categoryPrimaryKeyMapping)
-	sql := "DELETE FROM \"categories\" WHERE \"id\"=?"
+	sql := "DELETE FROM \"category\" WHERE \"category_id\"=?"
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -1178,12 +1178,12 @@ func (o *Category) Delete(ctx context.Context, exec boil.ContextExecutor) (int64
 	}
 	result, err := exec.ExecContext(ctx, sql, args...)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from categories")
+		return 0, errors.Wrap(err, "models: unable to delete from category")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for categories")
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for category")
 	}
 
 	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
@@ -1207,12 +1207,12 @@ func (q categoryQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor)
 
 	result, err := q.Query.ExecContext(ctx, exec)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from categories")
+		return 0, errors.Wrap(err, "models: unable to delete all from category")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for categories")
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for category")
 	}
 
 	return rowsAff, nil
@@ -1243,7 +1243,7 @@ func (o CategorySlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor)
 		args = append(args, pkeyArgs...)
 	}
 
-	sql := "DELETE FROM \"categories\" WHERE " +
+	sql := "DELETE FROM \"category\" WHERE " +
 		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, categoryPrimaryKeyColumns, len(o))
 
 	if boil.IsDebug(ctx) {
@@ -1258,7 +1258,7 @@ func (o CategorySlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor)
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for categories")
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for category")
 	}
 
 	if len(categoryAfterDeleteHooks) != 0 {
@@ -1284,7 +1284,7 @@ func (o *Category) ReloadG(ctx context.Context) error {
 // Reload refetches the object from the database
 // using the primary keys with an executor.
 func (o *Category) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindCategory(ctx, exec, o.ID)
+	ret, err := FindCategory(ctx, exec, o.CategoryID)
 	if err != nil {
 		return err
 	}
@@ -1317,7 +1317,7 @@ func (o *CategorySlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor
 		args = append(args, pkeyArgs...)
 	}
 
-	sql := "SELECT \"categories\".* FROM \"categories\" WHERE " +
+	sql := "SELECT \"category\".* FROM \"category\" WHERE " +
 		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, categoryPrimaryKeyColumns, len(*o))
 
 	q := queries.Raw(sql, args...)
@@ -1333,25 +1333,25 @@ func (o *CategorySlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor
 }
 
 // CategoryExistsG checks if the Category row exists.
-func CategoryExistsG(ctx context.Context, iD int64) (bool, error) {
-	return CategoryExists(ctx, boil.GetContextDB(), iD)
+func CategoryExistsG(ctx context.Context, categoryID int64) (bool, error) {
+	return CategoryExists(ctx, boil.GetContextDB(), categoryID)
 }
 
 // CategoryExists checks if the Category row exists.
-func CategoryExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
+func CategoryExists(ctx context.Context, exec boil.ContextExecutor, categoryID int64) (bool, error) {
 	var exists bool
-	sql := "select exists(select 1 from \"categories\" where \"id\"=? limit 1)"
+	sql := "select exists(select 1 from \"category\" where \"category_id\"=? limit 1)"
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
 		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
+		fmt.Fprintln(writer, categoryID)
 	}
-	row := exec.QueryRowContext(ctx, sql, iD)
+	row := exec.QueryRowContext(ctx, sql, categoryID)
 
 	err := row.Scan(&exists)
 	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if categories exists")
+		return false, errors.Wrap(err, "models: unable to check if category exists")
 	}
 
 	return exists, nil
@@ -1359,5 +1359,5 @@ func CategoryExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (b
 
 // Exists checks if the Category row exists.
 func (o *Category) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
-	return CategoryExists(ctx, exec, o.ID)
+	return CategoryExists(ctx, exec, o.CategoryID)
 }

@@ -21,24 +21,24 @@ var (
 	_ = queries.Equal
 )
 
-func testCharges(t *testing.T) {
+func testExpenses(t *testing.T) {
 	t.Parallel()
 
-	query := Charges()
+	query := Expenses()
 
 	if query.Query == nil {
 		t.Error("expected a query, got nothing")
 	}
 }
 
-func testChargesDelete(t *testing.T) {
+func testExpensesDelete(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Charge{}
-	if err = randomize.Struct(seed, o, chargeDBTypes, true, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	o := &Expense{}
+	if err = randomize.Struct(seed, o, expenseDBTypes, true, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -54,7 +54,7 @@ func testChargesDelete(t *testing.T) {
 		t.Error("should only have deleted one row, but affected:", rowsAff)
 	}
 
-	count, err := Charges().Count(ctx, tx)
+	count, err := Expenses().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -64,14 +64,14 @@ func testChargesDelete(t *testing.T) {
 	}
 }
 
-func testChargesQueryDeleteAll(t *testing.T) {
+func testExpensesQueryDeleteAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Charge{}
-	if err = randomize.Struct(seed, o, chargeDBTypes, true, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	o := &Expense{}
+	if err = randomize.Struct(seed, o, expenseDBTypes, true, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -81,13 +81,13 @@ func testChargesQueryDeleteAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	if rowsAff, err := Charges().DeleteAll(ctx, tx); err != nil {
+	if rowsAff, err := Expenses().DeleteAll(ctx, tx); err != nil {
 		t.Error(err)
 	} else if rowsAff != 1 {
 		t.Error("should only have deleted one row, but affected:", rowsAff)
 	}
 
-	count, err := Charges().Count(ctx, tx)
+	count, err := Expenses().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -97,14 +97,14 @@ func testChargesQueryDeleteAll(t *testing.T) {
 	}
 }
 
-func testChargesSliceDeleteAll(t *testing.T) {
+func testExpensesSliceDeleteAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Charge{}
-	if err = randomize.Struct(seed, o, chargeDBTypes, true, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	o := &Expense{}
+	if err = randomize.Struct(seed, o, expenseDBTypes, true, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -114,7 +114,7 @@ func testChargesSliceDeleteAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	slice := ChargeSlice{o}
+	slice := ExpenseSlice{o}
 
 	if rowsAff, err := slice.DeleteAll(ctx, tx); err != nil {
 		t.Error(err)
@@ -122,7 +122,7 @@ func testChargesSliceDeleteAll(t *testing.T) {
 		t.Error("should only have deleted one row, but affected:", rowsAff)
 	}
 
-	count, err := Charges().Count(ctx, tx)
+	count, err := Expenses().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -132,14 +132,14 @@ func testChargesSliceDeleteAll(t *testing.T) {
 	}
 }
 
-func testChargesExists(t *testing.T) {
+func testExpensesExists(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Charge{}
-	if err = randomize.Struct(seed, o, chargeDBTypes, true, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	o := &Expense{}
+	if err = randomize.Struct(seed, o, expenseDBTypes, true, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -149,23 +149,23 @@ func testChargesExists(t *testing.T) {
 		t.Error(err)
 	}
 
-	e, err := ChargeExists(ctx, tx, o.ID)
+	e, err := ExpenseExists(ctx, tx, o.ExpenseID)
 	if err != nil {
-		t.Errorf("Unable to check if Charge exists: %s", err)
+		t.Errorf("Unable to check if Expense exists: %s", err)
 	}
 	if !e {
-		t.Errorf("Expected ChargeExists to return true, but got false.")
+		t.Errorf("Expected ExpenseExists to return true, but got false.")
 	}
 }
 
-func testChargesFind(t *testing.T) {
+func testExpensesFind(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Charge{}
-	if err = randomize.Struct(seed, o, chargeDBTypes, true, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	o := &Expense{}
+	if err = randomize.Struct(seed, o, expenseDBTypes, true, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -175,24 +175,24 @@ func testChargesFind(t *testing.T) {
 		t.Error(err)
 	}
 
-	chargeFound, err := FindCharge(ctx, tx, o.ID)
+	expenseFound, err := FindExpense(ctx, tx, o.ExpenseID)
 	if err != nil {
 		t.Error(err)
 	}
 
-	if chargeFound == nil {
+	if expenseFound == nil {
 		t.Error("want a record, got nil")
 	}
 }
 
-func testChargesBind(t *testing.T) {
+func testExpensesBind(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Charge{}
-	if err = randomize.Struct(seed, o, chargeDBTypes, true, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	o := &Expense{}
+	if err = randomize.Struct(seed, o, expenseDBTypes, true, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -202,19 +202,19 @@ func testChargesBind(t *testing.T) {
 		t.Error(err)
 	}
 
-	if err = Charges().Bind(ctx, tx, o); err != nil {
+	if err = Expenses().Bind(ctx, tx, o); err != nil {
 		t.Error(err)
 	}
 }
 
-func testChargesOne(t *testing.T) {
+func testExpensesOne(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Charge{}
-	if err = randomize.Struct(seed, o, chargeDBTypes, true, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	o := &Expense{}
+	if err = randomize.Struct(seed, o, expenseDBTypes, true, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -224,38 +224,38 @@ func testChargesOne(t *testing.T) {
 		t.Error(err)
 	}
 
-	if x, err := Charges().One(ctx, tx); err != nil {
+	if x, err := Expenses().One(ctx, tx); err != nil {
 		t.Error(err)
 	} else if x == nil {
 		t.Error("expected to get a non nil record")
 	}
 }
 
-func testChargesAll(t *testing.T) {
+func testExpensesAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	chargeOne := &Charge{}
-	chargeTwo := &Charge{}
-	if err = randomize.Struct(seed, chargeOne, chargeDBTypes, false, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	expenseOne := &Expense{}
+	expenseTwo := &Expense{}
+	if err = randomize.Struct(seed, expenseOne, expenseDBTypes, false, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
-	if err = randomize.Struct(seed, chargeTwo, chargeDBTypes, false, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	if err = randomize.Struct(seed, expenseTwo, expenseDBTypes, false, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
-	if err = chargeOne.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = expenseOne.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
-	if err = chargeTwo.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = expenseTwo.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
 
-	slice, err := Charges().All(ctx, tx)
+	slice, err := Expenses().All(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -265,31 +265,31 @@ func testChargesAll(t *testing.T) {
 	}
 }
 
-func testChargesCount(t *testing.T) {
+func testExpensesCount(t *testing.T) {
 	t.Parallel()
 
 	var err error
 	seed := randomize.NewSeed()
-	chargeOne := &Charge{}
-	chargeTwo := &Charge{}
-	if err = randomize.Struct(seed, chargeOne, chargeDBTypes, false, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	expenseOne := &Expense{}
+	expenseTwo := &Expense{}
+	if err = randomize.Struct(seed, expenseOne, expenseDBTypes, false, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
-	if err = randomize.Struct(seed, chargeTwo, chargeDBTypes, false, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	if err = randomize.Struct(seed, expenseTwo, expenseDBTypes, false, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
-	if err = chargeOne.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = expenseOne.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
-	if err = chargeTwo.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = expenseTwo.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
 
-	count, err := Charges().Count(ctx, tx)
+	count, err := Expenses().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -299,155 +299,155 @@ func testChargesCount(t *testing.T) {
 	}
 }
 
-func chargeBeforeInsertHook(ctx context.Context, e boil.ContextExecutor, o *Charge) error {
-	*o = Charge{}
+func expenseBeforeInsertHook(ctx context.Context, e boil.ContextExecutor, o *Expense) error {
+	*o = Expense{}
 	return nil
 }
 
-func chargeAfterInsertHook(ctx context.Context, e boil.ContextExecutor, o *Charge) error {
-	*o = Charge{}
+func expenseAfterInsertHook(ctx context.Context, e boil.ContextExecutor, o *Expense) error {
+	*o = Expense{}
 	return nil
 }
 
-func chargeAfterSelectHook(ctx context.Context, e boil.ContextExecutor, o *Charge) error {
-	*o = Charge{}
+func expenseAfterSelectHook(ctx context.Context, e boil.ContextExecutor, o *Expense) error {
+	*o = Expense{}
 	return nil
 }
 
-func chargeBeforeUpdateHook(ctx context.Context, e boil.ContextExecutor, o *Charge) error {
-	*o = Charge{}
+func expenseBeforeUpdateHook(ctx context.Context, e boil.ContextExecutor, o *Expense) error {
+	*o = Expense{}
 	return nil
 }
 
-func chargeAfterUpdateHook(ctx context.Context, e boil.ContextExecutor, o *Charge) error {
-	*o = Charge{}
+func expenseAfterUpdateHook(ctx context.Context, e boil.ContextExecutor, o *Expense) error {
+	*o = Expense{}
 	return nil
 }
 
-func chargeBeforeDeleteHook(ctx context.Context, e boil.ContextExecutor, o *Charge) error {
-	*o = Charge{}
+func expenseBeforeDeleteHook(ctx context.Context, e boil.ContextExecutor, o *Expense) error {
+	*o = Expense{}
 	return nil
 }
 
-func chargeAfterDeleteHook(ctx context.Context, e boil.ContextExecutor, o *Charge) error {
-	*o = Charge{}
+func expenseAfterDeleteHook(ctx context.Context, e boil.ContextExecutor, o *Expense) error {
+	*o = Expense{}
 	return nil
 }
 
-func chargeBeforeUpsertHook(ctx context.Context, e boil.ContextExecutor, o *Charge) error {
-	*o = Charge{}
+func expenseBeforeUpsertHook(ctx context.Context, e boil.ContextExecutor, o *Expense) error {
+	*o = Expense{}
 	return nil
 }
 
-func chargeAfterUpsertHook(ctx context.Context, e boil.ContextExecutor, o *Charge) error {
-	*o = Charge{}
+func expenseAfterUpsertHook(ctx context.Context, e boil.ContextExecutor, o *Expense) error {
+	*o = Expense{}
 	return nil
 }
 
-func testChargesHooks(t *testing.T) {
+func testExpensesHooks(t *testing.T) {
 	t.Parallel()
 
 	var err error
 
 	ctx := context.Background()
-	empty := &Charge{}
-	o := &Charge{}
+	empty := &Expense{}
+	o := &Expense{}
 
 	seed := randomize.NewSeed()
-	if err = randomize.Struct(seed, o, chargeDBTypes, false); err != nil {
-		t.Errorf("Unable to randomize Charge object: %s", err)
+	if err = randomize.Struct(seed, o, expenseDBTypes, false); err != nil {
+		t.Errorf("Unable to randomize Expense object: %s", err)
 	}
 
-	AddChargeHook(boil.BeforeInsertHook, chargeBeforeInsertHook)
+	AddExpenseHook(boil.BeforeInsertHook, expenseBeforeInsertHook)
 	if err = o.doBeforeInsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeInsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeInsertHook function to empty object, but got: %#v", o)
 	}
-	chargeBeforeInsertHooks = []ChargeHook{}
+	expenseBeforeInsertHooks = []ExpenseHook{}
 
-	AddChargeHook(boil.AfterInsertHook, chargeAfterInsertHook)
+	AddExpenseHook(boil.AfterInsertHook, expenseAfterInsertHook)
 	if err = o.doAfterInsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterInsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterInsertHook function to empty object, but got: %#v", o)
 	}
-	chargeAfterInsertHooks = []ChargeHook{}
+	expenseAfterInsertHooks = []ExpenseHook{}
 
-	AddChargeHook(boil.AfterSelectHook, chargeAfterSelectHook)
+	AddExpenseHook(boil.AfterSelectHook, expenseAfterSelectHook)
 	if err = o.doAfterSelectHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterSelectHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterSelectHook function to empty object, but got: %#v", o)
 	}
-	chargeAfterSelectHooks = []ChargeHook{}
+	expenseAfterSelectHooks = []ExpenseHook{}
 
-	AddChargeHook(boil.BeforeUpdateHook, chargeBeforeUpdateHook)
+	AddExpenseHook(boil.BeforeUpdateHook, expenseBeforeUpdateHook)
 	if err = o.doBeforeUpdateHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeUpdateHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeUpdateHook function to empty object, but got: %#v", o)
 	}
-	chargeBeforeUpdateHooks = []ChargeHook{}
+	expenseBeforeUpdateHooks = []ExpenseHook{}
 
-	AddChargeHook(boil.AfterUpdateHook, chargeAfterUpdateHook)
+	AddExpenseHook(boil.AfterUpdateHook, expenseAfterUpdateHook)
 	if err = o.doAfterUpdateHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterUpdateHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterUpdateHook function to empty object, but got: %#v", o)
 	}
-	chargeAfterUpdateHooks = []ChargeHook{}
+	expenseAfterUpdateHooks = []ExpenseHook{}
 
-	AddChargeHook(boil.BeforeDeleteHook, chargeBeforeDeleteHook)
+	AddExpenseHook(boil.BeforeDeleteHook, expenseBeforeDeleteHook)
 	if err = o.doBeforeDeleteHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeDeleteHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeDeleteHook function to empty object, but got: %#v", o)
 	}
-	chargeBeforeDeleteHooks = []ChargeHook{}
+	expenseBeforeDeleteHooks = []ExpenseHook{}
 
-	AddChargeHook(boil.AfterDeleteHook, chargeAfterDeleteHook)
+	AddExpenseHook(boil.AfterDeleteHook, expenseAfterDeleteHook)
 	if err = o.doAfterDeleteHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterDeleteHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterDeleteHook function to empty object, but got: %#v", o)
 	}
-	chargeAfterDeleteHooks = []ChargeHook{}
+	expenseAfterDeleteHooks = []ExpenseHook{}
 
-	AddChargeHook(boil.BeforeUpsertHook, chargeBeforeUpsertHook)
+	AddExpenseHook(boil.BeforeUpsertHook, expenseBeforeUpsertHook)
 	if err = o.doBeforeUpsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeUpsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeUpsertHook function to empty object, but got: %#v", o)
 	}
-	chargeBeforeUpsertHooks = []ChargeHook{}
+	expenseBeforeUpsertHooks = []ExpenseHook{}
 
-	AddChargeHook(boil.AfterUpsertHook, chargeAfterUpsertHook)
+	AddExpenseHook(boil.AfterUpsertHook, expenseAfterUpsertHook)
 	if err = o.doAfterUpsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterUpsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterUpsertHook function to empty object, but got: %#v", o)
 	}
-	chargeAfterUpsertHooks = []ChargeHook{}
+	expenseAfterUpsertHooks = []ExpenseHook{}
 }
 
-func testChargesInsert(t *testing.T) {
+func testExpensesInsert(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Charge{}
-	if err = randomize.Struct(seed, o, chargeDBTypes, true, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	o := &Expense{}
+	if err = randomize.Struct(seed, o, expenseDBTypes, true, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -457,7 +457,7 @@ func testChargesInsert(t *testing.T) {
 		t.Error(err)
 	}
 
-	count, err := Charges().Count(ctx, tx)
+	count, err := Expenses().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -467,24 +467,24 @@ func testChargesInsert(t *testing.T) {
 	}
 }
 
-func testChargesInsertWhitelist(t *testing.T) {
+func testExpensesInsertWhitelist(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Charge{}
-	if err = randomize.Struct(seed, o, chargeDBTypes, true); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	o := &Expense{}
+	if err = randomize.Struct(seed, o, expenseDBTypes, true); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
-	if err = o.Insert(ctx, tx, boil.Whitelist(chargeColumnsWithoutDefault...)); err != nil {
+	if err = o.Insert(ctx, tx, boil.Whitelist(expenseColumnsWithoutDefault...)); err != nil {
 		t.Error(err)
 	}
 
-	count, err := Charges().Count(ctx, tx)
+	count, err := Expenses().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -494,17 +494,17 @@ func testChargesInsertWhitelist(t *testing.T) {
 	}
 }
 
-func testChargeToOneCategoryUsingCategory(t *testing.T) {
+func testExpenseToOneCategoryUsingExpenseCategory(t *testing.T) {
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 
-	var local Charge
+	var local Expense
 	var foreign Category
 
 	seed := randomize.NewSeed()
-	if err := randomize.Struct(seed, &local, chargeDBTypes, true, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	if err := randomize.Struct(seed, &local, expenseDBTypes, true, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 	if err := randomize.Struct(seed, &foreign, categoryDBTypes, false, categoryColumnsWithDefault...); err != nil {
 		t.Errorf("Unable to randomize Category struct: %s", err)
@@ -514,18 +514,18 @@ func testChargeToOneCategoryUsingCategory(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	queries.Assign(&local.CategoryID, foreign.ID)
+	queries.Assign(&local.ExpenseCategoryID, foreign.CategoryID)
 	if err := local.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Fatal(err)
 	}
 
-	check, err := local.Category().One(ctx, tx)
+	check, err := local.ExpenseCategory().One(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if !queries.Equal(check.ID, foreign.ID) {
-		t.Errorf("want: %v, got %v", foreign.ID, check.ID)
+	if !queries.Equal(check.CategoryID, foreign.CategoryID) {
+		t.Errorf("want: %v, got %v", foreign.CategoryID, check.CategoryID)
 	}
 
 	ranAfterSelectHook := false
@@ -534,19 +534,19 @@ func testChargeToOneCategoryUsingCategory(t *testing.T) {
 		return nil
 	})
 
-	slice := ChargeSlice{&local}
-	if err = local.L.LoadCategory(ctx, tx, false, (*[]*Charge)(&slice), nil); err != nil {
+	slice := ExpenseSlice{&local}
+	if err = local.L.LoadExpenseCategory(ctx, tx, false, (*[]*Expense)(&slice), nil); err != nil {
 		t.Fatal(err)
 	}
-	if local.R.Category == nil {
+	if local.R.ExpenseCategory == nil {
 		t.Error("struct should have been eager loaded")
 	}
 
-	local.R.Category = nil
-	if err = local.L.LoadCategory(ctx, tx, true, &local, nil); err != nil {
+	local.R.ExpenseCategory = nil
+	if err = local.L.LoadExpenseCategory(ctx, tx, true, &local, nil); err != nil {
 		t.Fatal(err)
 	}
-	if local.R.Category == nil {
+	if local.R.ExpenseCategory == nil {
 		t.Error("struct should have been eager loaded")
 	}
 
@@ -555,18 +555,18 @@ func testChargeToOneCategoryUsingCategory(t *testing.T) {
 	}
 }
 
-func testChargeToOneSetOpCategoryUsingCategory(t *testing.T) {
+func testExpenseToOneSetOpCategoryUsingExpenseCategory(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 
-	var a Charge
+	var a Expense
 	var b, c Category
 
 	seed := randomize.NewSeed()
-	if err = randomize.Struct(seed, &a, chargeDBTypes, false, strmangle.SetComplement(chargePrimaryKeyColumns, chargeColumnsWithoutDefault)...); err != nil {
+	if err = randomize.Struct(seed, &a, expenseDBTypes, false, strmangle.SetComplement(expensePrimaryKeyColumns, expenseColumnsWithoutDefault)...); err != nil {
 		t.Fatal(err)
 	}
 	if err = randomize.Struct(seed, &b, categoryDBTypes, false, strmangle.SetComplement(categoryPrimaryKeyColumns, categoryColumnsWithoutDefault)...); err != nil {
@@ -584,47 +584,47 @@ func testChargeToOneSetOpCategoryUsingCategory(t *testing.T) {
 	}
 
 	for i, x := range []*Category{&b, &c} {
-		err = a.SetCategory(ctx, tx, i != 0, x)
+		err = a.SetExpenseCategory(ctx, tx, i != 0, x)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if a.R.Category != x {
+		if a.R.ExpenseCategory != x {
 			t.Error("relationship struct not set to correct value")
 		}
 
-		if x.R.Charges[0] != &a {
+		if x.R.ExpenseCategoryExpenses[0] != &a {
 			t.Error("failed to append to foreign relationship struct")
 		}
-		if !queries.Equal(a.CategoryID, x.ID) {
-			t.Error("foreign key was wrong value", a.CategoryID)
+		if !queries.Equal(a.ExpenseCategoryID, x.CategoryID) {
+			t.Error("foreign key was wrong value", a.ExpenseCategoryID)
 		}
 
-		zero := reflect.Zero(reflect.TypeOf(a.CategoryID))
-		reflect.Indirect(reflect.ValueOf(&a.CategoryID)).Set(zero)
+		zero := reflect.Zero(reflect.TypeOf(a.ExpenseCategoryID))
+		reflect.Indirect(reflect.ValueOf(&a.ExpenseCategoryID)).Set(zero)
 
 		if err = a.Reload(ctx, tx); err != nil {
 			t.Fatal("failed to reload", err)
 		}
 
-		if !queries.Equal(a.CategoryID, x.ID) {
-			t.Error("foreign key was wrong value", a.CategoryID, x.ID)
+		if !queries.Equal(a.ExpenseCategoryID, x.CategoryID) {
+			t.Error("foreign key was wrong value", a.ExpenseCategoryID, x.CategoryID)
 		}
 	}
 }
 
-func testChargeToOneRemoveOpCategoryUsingCategory(t *testing.T) {
+func testExpenseToOneRemoveOpCategoryUsingExpenseCategory(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 
-	var a Charge
+	var a Expense
 	var b Category
 
 	seed := randomize.NewSeed()
-	if err = randomize.Struct(seed, &a, chargeDBTypes, false, strmangle.SetComplement(chargePrimaryKeyColumns, chargeColumnsWithoutDefault)...); err != nil {
+	if err = randomize.Struct(seed, &a, expenseDBTypes, false, strmangle.SetComplement(expensePrimaryKeyColumns, expenseColumnsWithoutDefault)...); err != nil {
 		t.Fatal(err)
 	}
 	if err = randomize.Struct(seed, &b, categoryDBTypes, false, strmangle.SetComplement(categoryPrimaryKeyColumns, categoryColumnsWithoutDefault)...); err != nil {
@@ -635,15 +635,15 @@ func testChargeToOneRemoveOpCategoryUsingCategory(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err = a.SetCategory(ctx, tx, true, &b); err != nil {
+	if err = a.SetExpenseCategory(ctx, tx, true, &b); err != nil {
 		t.Fatal(err)
 	}
 
-	if err = a.RemoveCategory(ctx, tx, &b); err != nil {
+	if err = a.RemoveExpenseCategory(ctx, tx, &b); err != nil {
 		t.Error("failed to remove relationship")
 	}
 
-	count, err := a.Category().Count(ctx, tx)
+	count, err := a.ExpenseCategory().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -651,27 +651,27 @@ func testChargeToOneRemoveOpCategoryUsingCategory(t *testing.T) {
 		t.Error("want no relationships remaining")
 	}
 
-	if a.R.Category != nil {
+	if a.R.ExpenseCategory != nil {
 		t.Error("R struct entry should be nil")
 	}
 
-	if !queries.IsValuerNil(a.CategoryID) {
+	if !queries.IsValuerNil(a.ExpenseCategoryID) {
 		t.Error("foreign key value should be nil")
 	}
 
-	if len(b.R.Charges) != 0 {
+	if len(b.R.ExpenseCategoryExpenses) != 0 {
 		t.Error("failed to remove a from b's relationships")
 	}
 }
 
-func testChargesReload(t *testing.T) {
+func testExpensesReload(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Charge{}
-	if err = randomize.Struct(seed, o, chargeDBTypes, true, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	o := &Expense{}
+	if err = randomize.Struct(seed, o, expenseDBTypes, true, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -686,14 +686,14 @@ func testChargesReload(t *testing.T) {
 	}
 }
 
-func testChargesReloadAll(t *testing.T) {
+func testExpensesReloadAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Charge{}
-	if err = randomize.Struct(seed, o, chargeDBTypes, true, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	o := &Expense{}
+	if err = randomize.Struct(seed, o, expenseDBTypes, true, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -703,21 +703,21 @@ func testChargesReloadAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	slice := ChargeSlice{o}
+	slice := ExpenseSlice{o}
 
 	if err = slice.ReloadAll(ctx, tx); err != nil {
 		t.Error(err)
 	}
 }
 
-func testChargesSelect(t *testing.T) {
+func testExpensesSelect(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Charge{}
-	if err = randomize.Struct(seed, o, chargeDBTypes, true, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	o := &Expense{}
+	if err = randomize.Struct(seed, o, expenseDBTypes, true, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -727,7 +727,7 @@ func testChargesSelect(t *testing.T) {
 		t.Error(err)
 	}
 
-	slice, err := Charges().All(ctx, tx)
+	slice, err := Expenses().All(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -738,25 +738,25 @@ func testChargesSelect(t *testing.T) {
 }
 
 var (
-	chargeDBTypes = map[string]string{`ID`: `INTEGER`, `Amount`: `INTEGER`, `CategoryID`: `INTEGER`, `Description`: `TEXT`}
-	_             = bytes.MinRead
+	expenseDBTypes = map[string]string{`ExpenseID`: `INTEGER`, `ExpenseAmount`: `INTEGER`, `ExpenseCategoryID`: `INTEGER`, `ExpenseDescription`: `TEXT`, `ExpenseDate`: `INTEGER`}
+	_              = bytes.MinRead
 )
 
-func testChargesUpdate(t *testing.T) {
+func testExpensesUpdate(t *testing.T) {
 	t.Parallel()
 
-	if 0 == len(chargePrimaryKeyColumns) {
+	if 0 == len(expensePrimaryKeyColumns) {
 		t.Skip("Skipping table with no primary key columns")
 	}
-	if len(chargeAllColumns) == len(chargePrimaryKeyColumns) {
+	if len(expenseAllColumns) == len(expensePrimaryKeyColumns) {
 		t.Skip("Skipping table with only primary key columns")
 	}
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Charge{}
-	if err = randomize.Struct(seed, o, chargeDBTypes, true, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	o := &Expense{}
+	if err = randomize.Struct(seed, o, expenseDBTypes, true, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -766,7 +766,7 @@ func testChargesUpdate(t *testing.T) {
 		t.Error(err)
 	}
 
-	count, err := Charges().Count(ctx, tx)
+	count, err := Expenses().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -775,8 +775,8 @@ func testChargesUpdate(t *testing.T) {
 		t.Error("want one record, got:", count)
 	}
 
-	if err = randomize.Struct(seed, o, chargeDBTypes, true, chargePrimaryKeyColumns...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	if err = randomize.Struct(seed, o, expenseDBTypes, true, expensePrimaryKeyColumns...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	if rowsAff, err := o.Update(ctx, tx, boil.Infer()); err != nil {
@@ -786,18 +786,18 @@ func testChargesUpdate(t *testing.T) {
 	}
 }
 
-func testChargesSliceUpdateAll(t *testing.T) {
+func testExpensesSliceUpdateAll(t *testing.T) {
 	t.Parallel()
 
-	if len(chargeAllColumns) == len(chargePrimaryKeyColumns) {
+	if len(expenseAllColumns) == len(expensePrimaryKeyColumns) {
 		t.Skip("Skipping table with only primary key columns")
 	}
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Charge{}
-	if err = randomize.Struct(seed, o, chargeDBTypes, true, chargeColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	o := &Expense{}
+	if err = randomize.Struct(seed, o, expenseDBTypes, true, expenseColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -807,7 +807,7 @@ func testChargesSliceUpdateAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	count, err := Charges().Count(ctx, tx)
+	count, err := Expenses().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -816,20 +816,20 @@ func testChargesSliceUpdateAll(t *testing.T) {
 		t.Error("want one record, got:", count)
 	}
 
-	if err = randomize.Struct(seed, o, chargeDBTypes, true, chargePrimaryKeyColumns...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	if err = randomize.Struct(seed, o, expenseDBTypes, true, expensePrimaryKeyColumns...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	// Remove Primary keys and unique columns from what we plan to update
 	var fields []string
-	if strmangle.StringSliceMatch(chargeAllColumns, chargePrimaryKeyColumns) {
-		fields = chargeAllColumns
+	if strmangle.StringSliceMatch(expenseAllColumns, expensePrimaryKeyColumns) {
+		fields = expenseAllColumns
 	} else {
 		fields = strmangle.SetComplement(
-			chargeAllColumns,
-			chargePrimaryKeyColumns,
+			expenseAllColumns,
+			expensePrimaryKeyColumns,
 		)
-		fields = strmangle.SetComplement(fields, chargeGeneratedColumns)
+		fields = strmangle.SetComplement(fields, expenseGeneratedColumns)
 	}
 
 	value := reflect.Indirect(reflect.ValueOf(o))
@@ -846,7 +846,7 @@ func testChargesSliceUpdateAll(t *testing.T) {
 		}
 	}
 
-	slice := ChargeSlice{o}
+	slice := ExpenseSlice{o}
 	if rowsAff, err := slice.UpdateAll(ctx, tx, updateMap); err != nil {
 		t.Error(err)
 	} else if rowsAff != 1 {
@@ -854,28 +854,28 @@ func testChargesSliceUpdateAll(t *testing.T) {
 	}
 }
 
-func testChargesUpsert(t *testing.T) {
+func testExpensesUpsert(t *testing.T) {
 	t.Parallel()
-	if len(chargeAllColumns) == len(chargePrimaryKeyColumns) {
+	if len(expenseAllColumns) == len(expensePrimaryKeyColumns) {
 		t.Skip("Skipping table with only primary key columns")
 	}
 
 	seed := randomize.NewSeed()
 	var err error
 	// Attempt the INSERT side of an UPSERT
-	o := Charge{}
-	if err = randomize.Struct(seed, &o, chargeDBTypes, true); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	o := Expense{}
+	if err = randomize.Struct(seed, &o, expenseDBTypes, true); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 	if err = o.Upsert(ctx, tx, false, nil, boil.Infer(), boil.Infer()); err != nil {
-		t.Errorf("Unable to upsert Charge: %s", err)
+		t.Errorf("Unable to upsert Expense: %s", err)
 	}
 
-	count, err := Charges().Count(ctx, tx)
+	count, err := Expenses().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -884,15 +884,15 @@ func testChargesUpsert(t *testing.T) {
 	}
 
 	// Attempt the UPDATE side of an UPSERT
-	if err = randomize.Struct(seed, &o, chargeDBTypes, false, chargePrimaryKeyColumns...); err != nil {
-		t.Errorf("Unable to randomize Charge struct: %s", err)
+	if err = randomize.Struct(seed, &o, expenseDBTypes, false, expensePrimaryKeyColumns...); err != nil {
+		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
 
 	if err = o.Upsert(ctx, tx, true, nil, boil.Infer(), boil.Infer()); err != nil {
-		t.Errorf("Unable to upsert Charge: %s", err)
+		t.Errorf("Unable to upsert Expense: %s", err)
 	}
 
-	count, err = Charges().Count(ctx, tx)
+	count, err = Expenses().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
