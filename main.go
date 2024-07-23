@@ -27,26 +27,18 @@ var DB *sql.DB
 func getExpense(c *gin.Context) {
 	id, _ := strconv.ParseInt(c.Param("id"), 6, 12)
 
-	fmt.Println(id)
-	fmt.Println(ctx)
-
-	expense, err := models.Expenses(qm.Where("expense_id = ?", 1)).One(ctx, DB)
+	expense, err := models.Expenses(qm.Where("expense_id = ?", id)).One(ctx, DB)
 	if err != nil {
 		log.Fatal("Error: Cannot open table categories: ", err)
 	}
-	fmt.Println(expense)
-
-	// expense, err := models.Expenses(qm.Where("id = ?", id)).One(ctx, db)
-	// if err != nil {
-	// 	log.Fatal("failed to get expense: %w", err)
-	// }
-	// fmt.Println(expense)
 
 	c.Header("Content-Type", "application/json")
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": id,
-	})
+	// c.JSON(http.StatusOK, gin.H{
+	// 	"message": id,
+	// })
+
+	c.JSON(http.StatusOK, expense)
 }
 
 // postExpense adds a charge from JSON received in the request body.
@@ -58,8 +50,6 @@ func postExpense(c *gin.Context) {
 	if err := c.BindJSON(&newExpense); err != nil {
 		return
 	}
-
-	fmt.Println("blah")
 
 	var expense models.Expense
 
