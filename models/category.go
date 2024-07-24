@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/friendsofgo/errors"
+	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -23,9 +24,9 @@ import (
 
 // Category is an object representing the database table.
 type Category struct {
-	CategoryID    int64  `boil:"category_id" json:"category_id" toml:"category_id" yaml:"category_id"`
-	CategoryName  string `boil:"category_name" json:"category_name" toml:"category_name" yaml:"category_name"`
-	CategoryLimit int64  `boil:"category_limit" json:"category_limit" toml:"category_limit" yaml:"category_limit"`
+	CategoryID    null.Int64 `boil:"category_id" json:"category_id,omitempty" toml:"category_id" yaml:"category_id,omitempty"`
+	CategoryName  string     `boil:"category_name" json:"category_name" toml:"category_name" yaml:"category_name"`
+	CategoryLimit float64    `boil:"category_limit" json:"category_limit" toml:"category_limit" yaml:"category_limit"`
 
 	R *categoryR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L categoryL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -53,28 +54,43 @@ var CategoryTableColumns = struct {
 
 // Generated where
 
-type whereHelperint64 struct{ field string }
+type whereHelpernull_Int64 struct{ field string }
 
-func (w whereHelperint64) EQ(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperint64) NEQ(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperint64) LT(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperint64) LTE(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperint64) GT(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperint64) GTE(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-func (w whereHelperint64) IN(slice []int64) qm.QueryMod {
+func (w whereHelpernull_Int64) EQ(x null.Int64) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, false, x)
+}
+func (w whereHelpernull_Int64) NEQ(x null.Int64) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, true, x)
+}
+func (w whereHelpernull_Int64) LT(x null.Int64) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LT, x)
+}
+func (w whereHelpernull_Int64) LTE(x null.Int64) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LTE, x)
+}
+func (w whereHelpernull_Int64) GT(x null.Int64) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GT, x)
+}
+func (w whereHelpernull_Int64) GTE(x null.Int64) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GTE, x)
+}
+func (w whereHelpernull_Int64) IN(slice []int64) qm.QueryMod {
 	values := make([]interface{}, 0, len(slice))
 	for _, value := range slice {
 		values = append(values, value)
 	}
 	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
 }
-func (w whereHelperint64) NIN(slice []int64) qm.QueryMod {
+func (w whereHelpernull_Int64) NIN(slice []int64) qm.QueryMod {
 	values := make([]interface{}, 0, len(slice))
 	for _, value := range slice {
 		values = append(values, value)
 	}
 	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
 }
+
+func (w whereHelpernull_Int64) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
+func (w whereHelpernull_Int64) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
 
 type whereHelperstring struct{ field string }
 
@@ -101,14 +117,43 @@ func (w whereHelperstring) NIN(slice []string) qm.QueryMod {
 	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
 }
 
+type whereHelperfloat64 struct{ field string }
+
+func (w whereHelperfloat64) EQ(x float64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.EQ, x) }
+func (w whereHelperfloat64) NEQ(x float64) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.NEQ, x)
+}
+func (w whereHelperfloat64) LT(x float64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LT, x) }
+func (w whereHelperfloat64) LTE(x float64) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LTE, x)
+}
+func (w whereHelperfloat64) GT(x float64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GT, x) }
+func (w whereHelperfloat64) GTE(x float64) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GTE, x)
+}
+func (w whereHelperfloat64) IN(slice []float64) qm.QueryMod {
+	values := make([]interface{}, 0, len(slice))
+	for _, value := range slice {
+		values = append(values, value)
+	}
+	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
+}
+func (w whereHelperfloat64) NIN(slice []float64) qm.QueryMod {
+	values := make([]interface{}, 0, len(slice))
+	for _, value := range slice {
+		values = append(values, value)
+	}
+	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
+}
+
 var CategoryWhere = struct {
-	CategoryID    whereHelperint64
+	CategoryID    whereHelpernull_Int64
 	CategoryName  whereHelperstring
-	CategoryLimit whereHelperint64
+	CategoryLimit whereHelperfloat64
 }{
-	CategoryID:    whereHelperint64{field: "\"category\".\"category_id\""},
+	CategoryID:    whereHelpernull_Int64{field: "\"category\".\"category_id\""},
 	CategoryName:  whereHelperstring{field: "\"category\".\"category_name\""},
-	CategoryLimit: whereHelperint64{field: "\"category\".\"category_limit\""},
+	CategoryLimit: whereHelperfloat64{field: "\"category\".\"category_limit\""},
 }
 
 // CategoryRels is where relationship names are stored.
@@ -765,13 +810,13 @@ func Categories(mods ...qm.QueryMod) categoryQuery {
 }
 
 // FindCategoryG retrieves a single record by ID.
-func FindCategoryG(ctx context.Context, categoryID int64, selectCols ...string) (*Category, error) {
+func FindCategoryG(ctx context.Context, categoryID null.Int64, selectCols ...string) (*Category, error) {
 	return FindCategory(ctx, boil.GetContextDB(), categoryID, selectCols...)
 }
 
 // FindCategory retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindCategory(ctx context.Context, exec boil.ContextExecutor, categoryID int64, selectCols ...string) (*Category, error) {
+func FindCategory(ctx context.Context, exec boil.ContextExecutor, categoryID null.Int64, selectCols ...string) (*Category, error) {
 	categoryObj := &Category{}
 
 	sel := "*"
@@ -1333,12 +1378,12 @@ func (o *CategorySlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor
 }
 
 // CategoryExistsG checks if the Category row exists.
-func CategoryExistsG(ctx context.Context, categoryID int64) (bool, error) {
+func CategoryExistsG(ctx context.Context, categoryID null.Int64) (bool, error) {
 	return CategoryExists(ctx, boil.GetContextDB(), categoryID)
 }
 
 // CategoryExists checks if the Category row exists.
-func CategoryExists(ctx context.Context, exec boil.ContextExecutor, categoryID int64) (bool, error) {
+func CategoryExists(ctx context.Context, exec boil.ContextExecutor, categoryID null.Int64) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from \"category\" where \"category_id\"=? limit 1)"
 

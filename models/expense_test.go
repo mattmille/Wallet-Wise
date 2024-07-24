@@ -506,7 +506,7 @@ func testExpenseToOneCategoryUsingExpenseCategory(t *testing.T) {
 	if err := randomize.Struct(seed, &local, expenseDBTypes, true, expenseColumnsWithDefault...); err != nil {
 		t.Errorf("Unable to randomize Expense struct: %s", err)
 	}
-	if err := randomize.Struct(seed, &foreign, categoryDBTypes, false, categoryColumnsWithDefault...); err != nil {
+	if err := randomize.Struct(seed, &foreign, categoryDBTypes, true, categoryColumnsWithDefault...); err != nil {
 		t.Errorf("Unable to randomize Category struct: %s", err)
 	}
 
@@ -738,7 +738,7 @@ func testExpensesSelect(t *testing.T) {
 }
 
 var (
-	expenseDBTypes = map[string]string{`ExpenseID`: `INTEGER`, `ExpenseAmount`: `INTEGER`, `ExpenseCategoryID`: `INTEGER`, `ExpenseDescription`: `TEXT`, `ExpenseDate`: `INTEGER`}
+	expenseDBTypes = map[string]string{`ExpenseID`: `INTEGER`, `ExpenseEpoch`: `REAL`, `ExpenseAmount`: `REAL`, `ExpenseDescription`: `TEXT`, `ExpenseCategoryID`: `INTEGER`}
 	_              = bytes.MinRead
 )
 

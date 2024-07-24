@@ -56,8 +56,8 @@ func postExpense(c *gin.Context) {
 	expense.ExpenseID = null.Int64From(newExpense.ID)
 	expense.ExpenseAmount = newExpense.Amount
 	expense.ExpenseCategoryID = null.Int64From(newExpense.CategoryID)
-	expense.ExpenseDescription = newExpense.Description
-	expense.ExpenseDate = null.Int64From(newExpense.Date)
+	expense.ExpenseDescription = null.StringFrom(newExpense.Description)
+	expense.ExpenseEpoch = newExpense.Epoch
 
 	// Fill in the fields of the Expense struct here
 	// For example:

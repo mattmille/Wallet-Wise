@@ -24,11 +24,11 @@ import (
 
 // Expense is an object representing the database table.
 type Expense struct {
-	ExpenseID          null.Int64 `boil:"expense_id" json:"expense_id,omitempty" toml:"expense_id" yaml:"expense_id,omitempty"`
-	ExpenseAmount      int64      `boil:"expense_amount" json:"expense_amount" toml:"expense_amount" yaml:"expense_amount"`
-	ExpenseCategoryID  null.Int64 `boil:"expense_category_id" json:"expense_category_id,omitempty" toml:"expense_category_id" yaml:"expense_category_id,omitempty"`
-	ExpenseDescription string     `boil:"expense_description" json:"expense_description" toml:"expense_description" yaml:"expense_description"`
-	ExpenseDate        null.Int64 `boil:"expense_date" json:"expense_date,omitempty" toml:"expense_date" yaml:"expense_date,omitempty"`
+	ExpenseID          null.Int64  `boil:"expense_id" json:"expense_id,omitempty" toml:"expense_id" yaml:"expense_id,omitempty"`
+	ExpenseEpoch       float64     `boil:"expense_epoch" json:"expense_epoch" toml:"expense_epoch" yaml:"expense_epoch"`
+	ExpenseAmount      float64     `boil:"expense_amount" json:"expense_amount" toml:"expense_amount" yaml:"expense_amount"`
+	ExpenseDescription null.String `boil:"expense_description" json:"expense_description,omitempty" toml:"expense_description" yaml:"expense_description,omitempty"`
+	ExpenseCategoryID  null.Int64  `boil:"expense_category_id" json:"expense_category_id,omitempty" toml:"expense_category_id" yaml:"expense_category_id,omitempty"`
 
 	R *expenseR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L expenseL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -36,62 +36,68 @@ type Expense struct {
 
 var ExpenseColumns = struct {
 	ExpenseID          string
+	ExpenseEpoch       string
 	ExpenseAmount      string
-	ExpenseCategoryID  string
 	ExpenseDescription string
-	ExpenseDate        string
+	ExpenseCategoryID  string
 }{
 	ExpenseID:          "expense_id",
+	ExpenseEpoch:       "expense_epoch",
 	ExpenseAmount:      "expense_amount",
-	ExpenseCategoryID:  "expense_category_id",
 	ExpenseDescription: "expense_description",
-	ExpenseDate:        "expense_date",
+	ExpenseCategoryID:  "expense_category_id",
 }
 
 var ExpenseTableColumns = struct {
 	ExpenseID          string
+	ExpenseEpoch       string
 	ExpenseAmount      string
-	ExpenseCategoryID  string
 	ExpenseDescription string
-	ExpenseDate        string
+	ExpenseCategoryID  string
 }{
 	ExpenseID:          "expense.expense_id",
+	ExpenseEpoch:       "expense.expense_epoch",
 	ExpenseAmount:      "expense.expense_amount",
-	ExpenseCategoryID:  "expense.expense_category_id",
 	ExpenseDescription: "expense.expense_description",
-	ExpenseDate:        "expense.expense_date",
+	ExpenseCategoryID:  "expense.expense_category_id",
 }
 
 // Generated where
 
-type whereHelpernull_Int64 struct{ field string }
+type whereHelpernull_String struct{ field string }
 
-func (w whereHelpernull_Int64) EQ(x null.Int64) qm.QueryMod {
+func (w whereHelpernull_String) EQ(x null.String) qm.QueryMod {
 	return qmhelper.WhereNullEQ(w.field, false, x)
 }
-func (w whereHelpernull_Int64) NEQ(x null.Int64) qm.QueryMod {
+func (w whereHelpernull_String) NEQ(x null.String) qm.QueryMod {
 	return qmhelper.WhereNullEQ(w.field, true, x)
 }
-func (w whereHelpernull_Int64) LT(x null.Int64) qm.QueryMod {
+func (w whereHelpernull_String) LT(x null.String) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.LT, x)
 }
-func (w whereHelpernull_Int64) LTE(x null.Int64) qm.QueryMod {
+func (w whereHelpernull_String) LTE(x null.String) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.LTE, x)
 }
-func (w whereHelpernull_Int64) GT(x null.Int64) qm.QueryMod {
+func (w whereHelpernull_String) GT(x null.String) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GT, x)
 }
-func (w whereHelpernull_Int64) GTE(x null.Int64) qm.QueryMod {
+func (w whereHelpernull_String) GTE(x null.String) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GTE, x)
 }
-func (w whereHelpernull_Int64) IN(slice []int64) qm.QueryMod {
+func (w whereHelpernull_String) LIKE(x null.String) qm.QueryMod {
+	return qm.Where(w.field+" LIKE ?", x)
+}
+func (w whereHelpernull_String) NLIKE(x null.String) qm.QueryMod {
+	return qm.Where(w.field+" NOT LIKE ?", x)
+}
+func (w whereHelpernull_String) IN(slice []string) qm.QueryMod {
 	values := make([]interface{}, 0, len(slice))
 	for _, value := range slice {
 		values = append(values, value)
 	}
 	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
 }
-func (w whereHelpernull_Int64) NIN(slice []int64) qm.QueryMod {
+func (w whereHelpernull_String) NIN(slice []string) qm.QueryMod {
 	values := make([]interface{}, 0, len(slice))
 	for _, value := range slice {
 		values = append(values, value)
@@ -99,21 +105,21 @@ func (w whereHelpernull_Int64) NIN(slice []int64) qm.QueryMod {
 	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
 }
 
-func (w whereHelpernull_Int64) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
-func (w whereHelpernull_Int64) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
+func (w whereHelpernull_String) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
+func (w whereHelpernull_String) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
 
 var ExpenseWhere = struct {
 	ExpenseID          whereHelpernull_Int64
-	ExpenseAmount      whereHelperint64
+	ExpenseEpoch       whereHelperfloat64
+	ExpenseAmount      whereHelperfloat64
+	ExpenseDescription whereHelpernull_String
 	ExpenseCategoryID  whereHelpernull_Int64
-	ExpenseDescription whereHelperstring
-	ExpenseDate        whereHelpernull_Int64
 }{
 	ExpenseID:          whereHelpernull_Int64{field: "\"expense\".\"expense_id\""},
-	ExpenseAmount:      whereHelperint64{field: "\"expense\".\"expense_amount\""},
+	ExpenseEpoch:       whereHelperfloat64{field: "\"expense\".\"expense_epoch\""},
+	ExpenseAmount:      whereHelperfloat64{field: "\"expense\".\"expense_amount\""},
+	ExpenseDescription: whereHelpernull_String{field: "\"expense\".\"expense_description\""},
 	ExpenseCategoryID:  whereHelpernull_Int64{field: "\"expense\".\"expense_category_id\""},
-	ExpenseDescription: whereHelperstring{field: "\"expense\".\"expense_description\""},
-	ExpenseDate:        whereHelpernull_Int64{field: "\"expense\".\"expense_date\""},
 }
 
 // ExpenseRels is where relationship names are stored.
@@ -144,9 +150,9 @@ func (r *expenseR) GetExpenseCategory() *Category {
 type expenseL struct{}
 
 var (
-	expenseAllColumns            = []string{"expense_id", "expense_amount", "expense_category_id", "expense_description", "expense_date"}
-	expenseColumnsWithoutDefault = []string{}
-	expenseColumnsWithDefault    = []string{"expense_id", "expense_amount", "expense_category_id", "expense_description", "expense_date"}
+	expenseAllColumns            = []string{"expense_id", "expense_epoch", "expense_amount", "expense_description", "expense_category_id"}
+	expenseColumnsWithoutDefault = []string{"expense_epoch", "expense_amount"}
+	expenseColumnsWithDefault    = []string{"expense_id", "expense_description", "expense_category_id"}
 	expensePrimaryKeyColumns     = []string{"expense_id"}
 	expenseGeneratedColumns      = []string{"expense_id"}
 )
