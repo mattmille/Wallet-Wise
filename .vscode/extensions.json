@@ -1,6 +1,5 @@
 {
   "recommendations": [
-    "Vue.volar",
-    "golang.go"
+    "ms-vscode-remote.remote-containers"
   ]
 }

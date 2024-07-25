@@ -7,36 +7,19 @@ This template should help get you started developing with Vue 3 and TypeScript i
 
 Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
 
-
-## Requirements
-
-Go, gcc
-
 ## Run
-
-```shell
-go install github.com/volatiletech/sqlboiler/v4@latest
-go install github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-sqlite3
-```
-
-Add to end of .bashrc
-```shell
-export PATH=$PATH:$HOME/go/bin
-```
-
-```shell
-npm install
-```
-
-```shell
-npm run build 
-```
 
 ```shell
 go run .
 ```
 
-## CGO ERROR
+## Misc
+
+### Go Stuff
+
+go mod tidy: Download all the dependencies that are required in your source files and update go.mod file with that dependency.
+
+### CGO ERROR
 
 Error:
 ```shell
